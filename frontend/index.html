@@ -1,0 +1,47 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CloudShield | Secure Messages</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 680px; margin: 60px auto; padding: 20px; background: #f3f6fb; color: #172033; }
+    main { background: white; padding: 28px; border-radius: 14px; box-shadow: 0 8px 30px #17203312; }
+    h1 { color: #174ea6; }
+    textarea { box-sizing: border-box; width: 100%; min-height: 110px; padding: 12px; margin: 10px 0; }
+    button { background: #174ea6; color: white; border: 0; border-radius: 6px; padding: 12px 18px; cursor: pointer; }
+    #result { overflow-wrap: anywhere; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>CloudShield</h1>
+    <p>A secure three-tier cloud application demonstration.</p>
+    <label for="message">Test message (1–200 characters)</label>
+    <textarea id="message" maxlength="200" placeholder="Enter a message to test input validation"></textarea>
+    <button id="send">Submit securely</button>
+    <p id="result" role="status" aria-live="polite"></p>
+  </main>
+  <script>
+    const message = document.getElementById("message");
+    const result = document.getElementById("result");
+
+    document.getElementById("send").addEventListener("click", async () => {
+      result.textContent = "Submitting…";
+      try {
+        const response = await fetch("/api/messages", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: message.value })
+        });
+        const data = await response.json();
+        result.textContent = response.ok
+          ? "Success: message saved. Record ID: " + data.id
+          : "Rejected: " + (data.error || "Request failed");
+      } catch {
+        result.textContent = "Could not reach CloudShield. Please try again.";
+      }
+    });
+  </script>
+</body>
+</html>
